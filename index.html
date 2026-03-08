@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Photography</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@200;300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0e0e;
+      --surface: #161616;
+      --border: #2a2a2a;
+      --text: #e8e4dc;
+      --muted: #7a7570;
+      --accent: #c8a96e;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.4;
+    }
+
+    /* Header */
+    header {
+      padding: 4rem 4rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .site-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      letter-spacing: 0.08em;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .site-title span {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .site-subtitle {
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 200;
+      padding-bottom: 0.25rem;
+    }
+
+    /* Gallery grid */
+    .gallery {
+      padding: 3rem 4rem;
+      columns: 3;
+      column-gap: 1.2rem;
+      animation: fadeUp 1s ease 0.2s both;
+    }
+
+    @media (max-width: 900px) { .gallery { columns: 2; padding: 2rem; } }
+    @media (max-width: 560px) { .gallery { columns: 1; padding: 1.5rem; } header { padding: 2rem; flex-direction: column; align-items: flex-start; gap: 0.5rem; } }
+
+    .photo-item {
+      break-inside: avoid;
+      margin-bottom: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      background: var(--surface);
+    }
+
+    .photo-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.7) 100%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .photo-item:hover::after { opacity: 1; }
+
+    .photo-item img {
+      width: 100%;
+      display: block;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      filter: brightness(0.92) contrast(1.05);
+    }
+
+    .photo-item:hover img { transform: scale(1.03); }
+
+    .photo-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 1.2rem 1rem 0.9rem;
+      z-index: 1;
+      transform: translateY(8px);
+      opacity: 0;
+      transition: all 0.35s ease;
+    }
+
+    .photo-item:hover .photo-caption { transform: translateY(0); opacity: 1; }
+
+    .caption-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      color: #fff;
+    }
+
+    .caption-meta {
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 200;
+      margin-top: 0.2rem;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 8, 8, 0.97);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 80vh;
+      object-fit: contain;
+      box-shadow: 0 0 80px rgba(0,0,0,0.8);
+      animation: lbIn 0.3s ease both;
+    }
+
+    .lightbox-info { text-align: center; }
+
+    .lightbox-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--text);
+    }
+
+    .lightbox-meta {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.4rem;
+    }
+
+    .lightbox-close {
+      position: fixed;
+      top: 1.5rem; right: 2rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.8rem;
+      cursor: pointer;
+      font-family: 'Jost', sans-serif;
+      font-weight: 200;
+      transition: color 0.2s;
+      line-height: 1;
+    }
+
+    .lightbox-close:hover { color: var(--text); }
+
+    .lightbox-nav {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+    }
+
+    .lightbox-nav:hover { border-color: var(--accent); color: var(--accent); }
+    .lightbox-nav.prev { left: 1.5rem; }
+    .lightbox-nav.next { right: 1.5rem; }
+
+    /* Footer */
+    footer {
+      padding: 2rem 4rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer p {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    footer .dot { color: var(--accent); margin: 0 0.5rem; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes lbIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="site-title">Your <span>Name</span></div>
+    <div class="site-subtitle">Photography &nbsp;·&nbsp; Portfolio</div>
+  </header>
+
+  <div class="gallery" id="gallery">
+
+    <!--
+      HOW TO ADD YOUR PHOTOS:
+      1. Upload your images to a folder called "photos" in your GitHub repo
+      2. Copy one of the .photo-item blocks below for each photo
+      3. Replace "photos/your-photo.jpg" with your actual filename
+      4. Update the title and metadata to match your photo
+    -->
+
+    <div class="photo-item" onclick="openLightbox(0)">
+      <img src="photos/photos/DSCF2003.JPG" alt="Photo 1" loading="lazy"/>
+      <div class="photo-caption">
+        <div class="caption-title">Title of Photo</div>
+        <div class="caption-meta">Location &nbsp;·&nbsp; 2024</div>
+      </div>
+    </div>
+
+    <div class="photo-item" onclick="openLightbox(1)">
+      <img src="photos/photo2.jpg" alt="Photo 2" loading="lazy"/>
+      <div class="photo-caption">
+        <div class="caption-title">Title of Photo</div>
+        <div class="caption-meta">Location &nbsp;·&nbsp; 2024</div>
+      </div>
+    </div>
+
+    <div class="photo-item" onclick="openLightbox(2)">
+      <img src="photos/photo3.jpg" alt="Photo 3" loading="lazy"/>
+      <div class="photo-caption">
+        <div class="caption-title">Title of Photo</div>
+        <div class="caption-meta">Location &nbsp;·&nbsp; 2024</div>
+      </div>
+    </div>
+
+    <div class="photo-item" onclick="openLightbox(3)">
+      <img src="photos/photo4.jpg" alt="Photo 4" loading="lazy"/>
+      <div class="photo-caption">
+        <div class="caption-title">Title of Photo</div>
+        <div class="caption-meta">Location &nbsp;·&nbsp; 2024</div>
+      </div>
+    </div>
+
+    <div class="photo-item" onclick="openLightbox(4)">
+      <img src="photos/photo5.jpg" alt="Photo 5" loading="lazy"/>
+      <div class="photo-caption">
+        <div class="caption-title">Title of Photo</div>
+        <div class="caption-meta">Location &nbsp;·&nbsp; 2024</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()">&#x2715;</button>
+    <button class="lightbox-nav prev" onclick="navigate(-1)">&#x2190;</button>
+    <button class="lightbox-nav next" onclick="navigate(1)">&#x2192;</button>
+    <img id="lightbox-img" src="" alt=""/>
+    <div class="lightbox-info">
+      <div class="lightbox-title" id="lightbox-title"></div>
+      <div class="lightbox-meta" id="lightbox-meta"></div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Youssef Girges</p>
+    <p>All Rights Reserved <span class="dot">·</span> Photography</p>
+  </footer>
+
+  <script>
+    const items = document.querySelectorAll('.photo-item');
+    let current = 0;
+
+    function openLightbox(index) {
+      current = index;
+      updateLightbox();
+      document.getElementById('lightbox').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function navigate(dir) {
+      current = (current + dir + items.length) % items.length;
+      updateLightbox();
+    }
+
+    function updateLightbox() {
+      const item = items[current];
+      const img = item.querySelector('img');
+      const title = item.querySelector('.caption-title');
+      const meta = item.querySelector('.caption-meta');
+      document.getElementById('lightbox-img').src = img.src;
+      document.getElementById('lightbox-title').textContent = title.textContent;
+      document.getElementById('lightbox-meta').textContent = meta.textContent;
+    }
+
+    document.addEventListener('keydown', e => {
+      if (!document.getElementById('lightbox').classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') navigate(-1);
+      if (e.key === 'ArrowRight') navigate(1);
+    });
+
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+      if (e.target === this) closeLightbox();
+    });
+  </script>
+
+</body>
+</html>
