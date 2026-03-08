@@ -316,7 +316,6 @@
     <button class="lightbox-nav next" onclick="navigate(1)">&#x2192;</button>
     <img id="lightbox-img" src="" alt=""/>
     <div class="lightbox-info">
-      <div class="lightbox-title" id="lightbox-title"></div>
       <div class="lightbox-meta" id="lightbox-meta"></div>
     </div>
   </div>
@@ -347,15 +346,13 @@
       updateLightbox();
     }
 
-    function updateLightbox() {
-      const item = items[current];
-      const img = item.querySelector('img');
-      const title = item.querySelector('.caption-title');
-      const meta = item.querySelector('.caption-meta');
-      document.getElementById('lightbox-img').src = img.src;
-      document.getElementById('lightbox-title').textContent = title.textContent;
-      document.getElementById('lightbox-meta').textContent = meta.textContent;
-    }
+function updateLightbox() {
+  const item = items[current];
+  const img = item.querySelector('img');
+  const meta = item.querySelector('.caption-meta');
+  document.getElementById('lightbox-img').src = img.src;
+  document.getElementById('lightbox-meta').textContent = meta.textContent;
+}
 
     document.addEventListener('keydown', e => {
       if (!document.getElementById('lightbox').classList.contains('active')) return;
