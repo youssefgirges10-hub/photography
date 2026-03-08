@@ -76,12 +76,12 @@
     .gallery {
       padding: 3rem 4rem;
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr;
       gap: 1.2rem;
       animation: fadeUp 1s ease 0.2s both;
     }
 
-    @media (max-width: 900px) { .gallery { grid-template-columns: repeat(2, 1fr); padding: 2rem; } }
+    @media (max-width: 900px) { .gallery { grid-template-columns: 1fr; padding: 2rem; } }
     @media (max-width: 560px) { .gallery { grid-template-columns: 1fr; padding: 1.5rem; } header { padding: 2rem; flex-direction: column; align-items: flex-start; gap: 0.5rem; } }
 
     .photo-item {
@@ -275,35 +275,35 @@
     <div class="photo-item" onclick="openLightbox(0)">
       <img src="photos/photo1.JPG" alt="Photo 1" loading="lazy"/>
       <div class="photo-caption">
-        <div class="caption-title">St. Mary & St. Moses Monastery - 2025</div>
+        <div class="caption-meta">St. Mary & St. Moses Monastery &nbsp;·&nbsp; 2025</div>
       </div>
     </div>
 
     <div class="photo-item" onclick="openLightbox(1)">
       <img src="photos/photo2.JPG" alt="Photo 2" loading="lazy"/>
       <div class="photo-caption">
-        <div class="caption-title">St. Mary & St. Moses Monastery - 2025</div>
+        <div class="caption-meta">St. Mary & St. Moses Monastery &nbsp;·&nbsp; 2025</div>
       </div>
     </div>
 
     <div class="photo-item" onclick="openLightbox(2)">
       <img src="photos/photo3.JPG" alt="Photo 3" loading="lazy"/>
       <div class="photo-caption">
-        <div class="caption-title">St. Mary & St. Moses Monastery - 2025</div>
+        <div class="caption-meta">St. Mary & St. Moses Monastery &nbsp;·&nbsp; 2025</div>
       </div>
     </div>
 
     <div class="photo-item" onclick="openLightbox(3)">
       <img src="photos/photo4.JPG" alt="Photo 4" loading="lazy"/>
       <div class="photo-caption">
-        <div class="caption-title">St. Mary & St. Moses Monastery - 2025</div>
+        <div class="caption-meta">St. Mary & St. Moses Monastery &nbsp;·&nbsp; 2025</div>
       </div>
     </div>
 
     <div class="photo-item" onclick="openLightbox(4)">
       <img src="photos/photo5.JPG" alt="Photo 5" loading="lazy"/>
       <div class="photo-caption">
-        <div class="caption-title">St. Mary & St. Moses Monastery - 2025</div>
+        <div class="caption-meta">St. Mary & St. Moses Monastery &nbsp;·&nbsp; 2025</div>
       </div>
     </div>
 
